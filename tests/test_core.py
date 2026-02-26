@@ -1,5 +1,7 @@
 """Tests for fubon-cli core module"""
+
 import pytest
+
 from fubon_cli import core
 
 

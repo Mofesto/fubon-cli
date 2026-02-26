@@ -69,8 +69,12 @@ def ticker(symbol, odd_lot):
 
 @market_group.command("candles")
 @click.argument("symbol")
-@click.option("--timeframe", type=click.Choice(["1", "5", "10", "15", "30", "60"]),
-              default="5", help="K-line timeframe in minutes")
+@click.option(
+    "--timeframe",
+    type=click.Choice(["1", "5", "10", "15", "30", "60"]),
+    default="5",
+    help="K-line timeframe in minutes",
+)
 @click.option("--odd-lot", is_flag=True, help="Query odd-lot candles")
 def candles(symbol, timeframe, odd_lot):
     """Get intraday candlestick (K-line) data.
@@ -159,8 +163,12 @@ def snapshot(market):
 
 @market_group.command("movers")
 @click.argument("market", type=click.Choice(["TSE", "OTC", "ESB", "TIB", "PSB"]))
-@click.option("--direction", type=click.Choice(["up", "down"]), default="up", help="Price direction")
-@click.option("--change", type=click.Choice(["percent", "value"]), default="percent", help="Change type")
+@click.option(
+    "--direction", type=click.Choice(["up", "down"]), default="up", help="Price direction"
+)
+@click.option(
+    "--change", type=click.Choice(["percent", "value"]), default="percent", help="Change type"
+)
 def movers(market, direction, change):
     """Get top movers (gainers/losers) for a market.
 
@@ -181,7 +189,12 @@ def movers(market, direction, change):
 
 @market_group.command("actives")
 @click.argument("market", type=click.Choice(["TSE", "OTC", "ESB", "TIB", "PSB"]))
-@click.option("--trade", type=click.Choice(["volume", "value"]), default="volume", help="Rank by volume or value")
+@click.option(
+    "--trade",
+    type=click.Choice(["volume", "value"]),
+    default="volume",
+    help="Rank by volume or value",
+)
 def actives(market, trade):
     """Get most active stocks by volume or value.
 
@@ -203,8 +216,12 @@ def actives(market, trade):
 @click.argument("symbol")
 @click.option("--from", "from_date", default=None, help="Start date (yyyy-MM-dd)")
 @click.option("--to", "to_date", default=None, help="End date (yyyy-MM-dd)")
-@click.option("--timeframe", type=click.Choice(["1", "5", "10", "15", "30", "60", "D", "W", "M"]),
-              default="D", help="K-line timeframe")
+@click.option(
+    "--timeframe",
+    type=click.Choice(["1", "5", "10", "15", "30", "60", "D", "W", "M"]),
+    default="D",
+    help="K-line timeframe",
+)
 @click.option("--adjusted", is_flag=True, help="Use adjusted prices")
 def history(symbol, from_date, to_date, timeframe, adjusted):
     """Get historical candlestick data.
@@ -251,9 +268,16 @@ def stats(symbol):
 
 
 @market_group.command("tickers")
-@click.option("--type", "ticker_type", type=click.Choice(["EQUITY", "INDEX", "WARRANT", "ODDLOT"]),
-              default="EQUITY", help="Ticker type")
-@click.option("--exchange", type=click.Choice(["TWSE", "TPEx"]), default=None, help="Exchange filter")
+@click.option(
+    "--type",
+    "ticker_type",
+    type=click.Choice(["EQUITY", "INDEX", "WARRANT", "ODDLOT"]),
+    default="EQUITY",
+    help="Ticker type",
+)
+@click.option(
+    "--exchange", type=click.Choice(["TWSE", "TPEx"]), default=None, help="Exchange filter"
+)
 def tickers(ticker_type, exchange):
     """List available tickers by type and exchange.
 

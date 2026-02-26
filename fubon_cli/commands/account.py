@@ -4,7 +4,7 @@ import sys
 
 import click
 
-from fubon_cli.core import get_sdk_and_accounts, get_account, obj_to_dict, output
+from fubon_cli.core import get_account, get_sdk_and_accounts, obj_to_dict, output
 
 
 @click.group("account")
@@ -60,8 +60,13 @@ def unrealized(account_index):
 
 
 @account_group.command("settlement")
-@click.option("--range", "date_range", type=click.Choice(["0d", "1d", "2d", "3d"]),
-              default="0d", help="Query range: 0d=today, 1d=yesterday, etc.")
+@click.option(
+    "--range",
+    "date_range",
+    type=click.Choice(["0d", "1d", "2d", "3d"]),
+    default="0d",
+    help="Query range: 0d=today, 1d=yesterday, etc.",
+)
 @click.option("--account-index", type=int, default=0, help="Account index")
 def settlement(date_range, account_index):
     """Query settlement information.

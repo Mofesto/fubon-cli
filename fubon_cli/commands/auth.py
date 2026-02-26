@@ -6,8 +6,12 @@ import sys
 import click
 
 from fubon_cli.core import (
-    save_session, load_session, clear_session,
-    get_sdk_and_accounts, obj_to_dict, output,
+    clear_session,
+    get_sdk_and_accounts,
+    load_session,
+    obj_to_dict,
+    output,
+    save_session,
 )
 
 
@@ -30,15 +34,21 @@ def auth_group(ctx, personal_id, password, cert_path, cert_password):
 
     # Direct invocation = login
     if not all([personal_id, password, cert_path]):
-        output(None, success=False,
-               error="Missing required options. Usage: fubon login --id <ID> --password <PW> --cert-path <PATH> [--cert-password <PW>]")
+        output(
+            None,
+            success=False,
+            error="Missing required options. Usage: fubon login --id <ID> --password <PW> --cert-path <PATH> [--cert-password <PW>]",
+        )
         sys.exit(1)
 
     try:
         from fubon_neo.sdk import FubonSDK
     except ImportError:
-        output(None, success=False,
-               error="fubon_neo SDK not installed. Run: pip install fubon_neo-2.2.8-cp37-abi3-win_amd64.whl")
+        output(
+            None,
+            success=False,
+            error="fubon_neo SDK not installed. Run: pip install fubon_neo-2.2.8-cp37-abi3-win_amd64.whl",
+        )
         sys.exit(1)
 
     sdk = FubonSDK()
@@ -76,8 +86,11 @@ def status():
     if session is None:
         output({"logged_in": False}, success=True)
     else:
-        output({
-            "logged_in": True,
-            "personal_id": session["personal_id"][:3] + "***",
-            "cert_path": session["cert_path"],
-        }, success=True)
+        output(
+            {
+                "logged_in": True,
+                "personal_id": session["personal_id"][:3] + "***",
+                "cert_path": session["cert_path"],
+            },
+            success=True,
+        )

@@ -18,8 +18,12 @@ def realtime_group():
 
 @realtime_group.command("subscribe")
 @click.argument("symbol")
-@click.option("--channel", type=click.Choice(["trades", "aggregates", "candles"]),
-              default="trades", help="Data channel to subscribe")
+@click.option(
+    "--channel",
+    type=click.Choice(["trades", "aggregates", "candles"]),
+    default="trades",
+    help="Data channel to subscribe",
+)
 def subscribe(symbol, channel):
     """Subscribe to realtime data for a stock. Streams JSON lines to stdout.
 
@@ -101,8 +105,12 @@ def callbacks(account_index):
     sdk.set_on_filled(on_filled)
     sdk.set_on_event(on_event)
 
-    print(json.dumps({"event": "listening", "message": "Waiting for callbacks... Press Ctrl+C to stop."}),
-          flush=True)
+    print(
+        json.dumps(
+            {"event": "listening", "message": "Waiting for callbacks... Press Ctrl+C to stop."}
+        ),
+        flush=True,
+    )
 
     def handle_signal(signum, frame):
         sys.exit(0)

@@ -13,17 +13,29 @@ SESSION_FILE = os.path.join(os.path.expanduser("~"), ".fubon-cli-session.json")
 def _import_sdk():
     """Import FubonSDK and related modules. Raises clear error if not installed."""
     try:
-        from fubon_neo.sdk import FubonSDK, Order
         from fubon_neo.constant import (
-            TimeInForce, OrderType, PriceType, MarketType, BSAction,
-            FutOptMarketType, FutOptOrderType, FutOptPriceType, CallPut,
+            BSAction,
+            CallPut,
+            FutOptMarketType,
+            FutOptOrderType,
+            FutOptPriceType,
+            MarketType,
+            OrderType,
+            PriceType,
+            TimeInForce,
         )
+        from fubon_neo.sdk import FubonSDK, Order
+
         return FubonSDK, Order
     except ImportError:
-        print(json.dumps({
-            "success": False,
-            "error": "fubon_neo SDK not installed. Install the .whl file first: pip install fubon_neo-2.2.8-cp37-abi3-win_amd64.whl"
-        }))
+        print(
+            json.dumps(
+                {
+                    "success": False,
+                    "error": "fubon_neo SDK not installed. Install the .whl file first: pip install fubon_neo-2.2.8-cp37-abi3-win_amd64.whl",
+                }
+            )
+        )
         sys.exit(1)
 
 
@@ -61,10 +73,14 @@ def get_sdk_and_accounts():
     """
     session = load_session()
     if session is None:
-        print(json.dumps({
-            "success": False,
-            "error": "Not logged in. Run: fubon login --id <ID> --password <PW> --cert-path <PATH> --cert-password <PW>"
-        }))
+        print(
+            json.dumps(
+                {
+                    "success": False,
+                    "error": "Not logged in. Run: fubon login --id <ID> --password <PW> --cert-path <PATH> --cert-password <PW>",
+                }
+            )
+        )
         sys.exit(1)
 
     FubonSDK, _ = _import_sdk()
@@ -87,10 +103,14 @@ def get_sdk_and_accounts():
 def get_account(sdk, accounts, index=0):
     """Get a specific account from the accounts list."""
     if index < 0 or index >= len(accounts):
-        print(json.dumps({
-            "success": False,
-            "error": f"Account index {index} out of range. Available: 0-{len(accounts) - 1}"
-        }))
+        print(
+            json.dumps(
+                {
+                    "success": False,
+                    "error": f"Account index {index} out of range. Available: 0-{len(accounts) - 1}",
+                }
+            )
+        )
         sys.exit(1)
     return accounts[index]
 
@@ -121,6 +141,7 @@ def obj_to_dict(obj):
 def _parse_sdk_repr(text):
     """Parse SDK object repr like 'ClassName { field: value, ... }' into dict."""
     import re
+
     # Remove outer class name and braces
     match = re.match(r"^\w+\s*\{(.*)\}\s*$", text, re.DOTALL)
     if not match:
@@ -155,7 +176,7 @@ def _parse_sdk_repr(text):
         if colon_idx == -1:
             continue
         key = part[:colon_idx].strip()
-        val = part[colon_idx + 1:].strip()
+        val = part[colon_idx + 1 :].strip()
 
         # Parse value
         if val == "None" or val == "null":

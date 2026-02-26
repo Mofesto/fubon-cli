@@ -5,7 +5,7 @@ import sys
 
 import click
 
-from fubon_cli.core import get_sdk_and_accounts, get_account, obj_to_dict, output
+from fubon_cli.core import get_account, get_sdk_and_accounts, obj_to_dict, output
 
 
 @click.group("stock")
@@ -17,16 +17,36 @@ def stock_group():
 @stock_group.command("buy")
 @click.argument("symbol")
 @click.argument("quantity", type=int)
-@click.option("--price", type=str, default=None, help="Limit price. Omit for market/special price types.")
-@click.option("--price-type", type=click.Choice(["limit", "market", "limit-up", "limit-down", "reference"]),
-              default="limit", help="Price type")
-@click.option("--time-in-force", "tif", type=click.Choice(["ROD", "IOC", "FOK"]),
-              default="ROD", help="Time in force")
-@click.option("--order-type", "otype", type=click.Choice(["stock", "margin", "short", "sbl", "day-trade"]),
-              default="stock", help="Order type")
-@click.option("--market-type", "mtype",
-              type=click.Choice(["common", "odd", "intraday-odd", "fixing", "emg", "emg-odd"]),
-              default="common", help="Market type")
+@click.option(
+    "--price", type=str, default=None, help="Limit price. Omit for market/special price types."
+)
+@click.option(
+    "--price-type",
+    type=click.Choice(["limit", "market", "limit-up", "limit-down", "reference"]),
+    default="limit",
+    help="Price type",
+)
+@click.option(
+    "--time-in-force",
+    "tif",
+    type=click.Choice(["ROD", "IOC", "FOK"]),
+    default="ROD",
+    help="Time in force",
+)
+@click.option(
+    "--order-type",
+    "otype",
+    type=click.Choice(["stock", "margin", "short", "sbl", "day-trade"]),
+    default="stock",
+    help="Order type",
+)
+@click.option(
+    "--market-type",
+    "mtype",
+    type=click.Choice(["common", "odd", "intraday-odd", "fixing", "emg", "emg-odd"]),
+    default="common",
+    help="Market type",
+)
 @click.option("--account-index", type=int, default=0, help="Account index (default: 0)")
 @click.option("--user-def", default=None, help="User-defined tag (max 10 alphanumeric chars)")
 def buy(symbol, quantity, price, price_type, tif, otype, mtype, account_index, user_def):
@@ -38,22 +58,44 @@ def buy(symbol, quantity, price, price_type, tif, otype, mtype, account_index, u
       fubon stock buy 2881 2000 --price-type limit-down
       fubon stock buy 2330 500 --price 580 --time-in-force IOC
     """
-    _place_order("Buy", symbol, quantity, price, price_type, tif, otype, mtype, account_index, user_def)
+    _place_order(
+        "Buy", symbol, quantity, price, price_type, tif, otype, mtype, account_index, user_def
+    )
 
 
 @stock_group.command("sell")
 @click.argument("symbol")
 @click.argument("quantity", type=int)
-@click.option("--price", type=str, default=None, help="Limit price. Omit for market/special price types.")
-@click.option("--price-type", type=click.Choice(["limit", "market", "limit-up", "limit-down", "reference"]),
-              default="limit", help="Price type")
-@click.option("--time-in-force", "tif", type=click.Choice(["ROD", "IOC", "FOK"]),
-              default="ROD", help="Time in force")
-@click.option("--order-type", "otype", type=click.Choice(["stock", "margin", "short", "sbl", "day-trade"]),
-              default="stock", help="Order type")
-@click.option("--market-type", "mtype",
-              type=click.Choice(["common", "odd", "intraday-odd", "fixing", "emg", "emg-odd"]),
-              default="common", help="Market type")
+@click.option(
+    "--price", type=str, default=None, help="Limit price. Omit for market/special price types."
+)
+@click.option(
+    "--price-type",
+    type=click.Choice(["limit", "market", "limit-up", "limit-down", "reference"]),
+    default="limit",
+    help="Price type",
+)
+@click.option(
+    "--time-in-force",
+    "tif",
+    type=click.Choice(["ROD", "IOC", "FOK"]),
+    default="ROD",
+    help="Time in force",
+)
+@click.option(
+    "--order-type",
+    "otype",
+    type=click.Choice(["stock", "margin", "short", "sbl", "day-trade"]),
+    default="stock",
+    help="Order type",
+)
+@click.option(
+    "--market-type",
+    "mtype",
+    type=click.Choice(["common", "odd", "intraday-odd", "fixing", "emg", "emg-odd"]),
+    default="common",
+    help="Market type",
+)
 @click.option("--account-index", type=int, default=0, help="Account index (default: 0)")
 @click.option("--user-def", default=None, help="User-defined tag (max 10 alphanumeric chars)")
 def sell(symbol, quantity, price, price_type, tif, otype, mtype, account_index, user_def):
@@ -64,33 +106,44 @@ def sell(symbol, quantity, price, price_type, tif, otype, mtype, account_index, 
       fubon stock sell 2330 1000 --price 600
       fubon stock sell 2881 2000 --price-type market
     """
-    _place_order("Sell", symbol, quantity, price, price_type, tif, otype, mtype, account_index, user_def)
+    _place_order(
+        "Sell", symbol, quantity, price, price_type, tif, otype, mtype, account_index, user_def
+    )
 
 
-def _place_order(action, symbol, quantity, price, price_type, tif, otype, mtype, account_index, user_def):
+def _place_order(
+    action, symbol, quantity, price, price_type, tif, otype, mtype, account_index, user_def
+):
     """Internal: build and place a stock order."""
+    from fubon_neo.constant import BSAction, MarketType, OrderType, PriceType, TimeInForce
     from fubon_neo.sdk import Order
-    from fubon_neo.constant import BSAction, TimeInForce, OrderType, PriceType, MarketType
 
     sdk, accounts = get_sdk_and_accounts()
     acc = get_account(sdk, accounts, account_index)
 
     bs_map = {"Buy": BSAction.Buy, "Sell": BSAction.Sell}
     pt_map = {
-        "limit": PriceType.Limit, "market": PriceType.Market,
-        "limit-up": PriceType.LimitUp, "limit-down": PriceType.LimitDown,
+        "limit": PriceType.Limit,
+        "market": PriceType.Market,
+        "limit-up": PriceType.LimitUp,
+        "limit-down": PriceType.LimitDown,
         "reference": PriceType.Reference,
     }
     tif_map = {"ROD": TimeInForce.ROD, "IOC": TimeInForce.IOC, "FOK": TimeInForce.FOK}
     ot_map = {
-        "stock": OrderType.Stock, "margin": OrderType.Margin,
-        "short": OrderType.Short, "sbl": OrderType.SBL,
+        "stock": OrderType.Stock,
+        "margin": OrderType.Margin,
+        "short": OrderType.Short,
+        "sbl": OrderType.SBL,
         "day-trade": OrderType.DayTrade,
     }
     mt_map = {
-        "common": MarketType.Common, "odd": MarketType.Odd,
-        "intraday-odd": MarketType.IntradayOdd, "fixing": MarketType.Fixing,
-        "emg": MarketType.Emg, "emg-odd": MarketType.EmgOdd,
+        "common": MarketType.Common,
+        "odd": MarketType.Odd,
+        "intraday-odd": MarketType.IntradayOdd,
+        "fixing": MarketType.Fixing,
+        "emg": MarketType.Emg,
+        "emg-odd": MarketType.EmgOdd,
     }
 
     if price_type == "limit" and price is None:
@@ -168,7 +221,9 @@ def cancel(order_no, account_index):
                     break
 
         if target is None:
-            output(None, success=False, error=f"Order {order_no} not found in current order results")
+            output(
+                None, success=False, error=f"Order {order_no} not found in current order results"
+            )
             sys.exit(1)
 
         result = sdk.stock.cancel_order(acc, target)

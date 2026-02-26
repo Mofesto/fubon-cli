@@ -1,6 +1,8 @@
 """Tests for fubon-cli main CLI"""
+
 import pytest
 from click.testing import CliRunner
+
 from fubon_cli.main import cli
 
 
