@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fubon-cli"
+version = "0.1.0"
+description = "CLI tool for Fubon Neo trading API, designed for AI agent automation"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.8"
+dependencies = [
+    "click>=8.0",
+]
+
+[project.scripts]
+fubon = "fubon_cli.main:cli"
+
+[tool.setuptools.packages.find]
+include = ["fubon_cli*"]
