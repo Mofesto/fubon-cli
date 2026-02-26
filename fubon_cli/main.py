@@ -5,6 +5,8 @@ import click
 from fubon_cli import __version__
 from fubon_cli.commands.account import account_group
 from fubon_cli.commands.auth import auth_group
+from fubon_cli.commands.condition import condition_group
+from fubon_cli.commands.futopt import futopt_group
 from fubon_cli.commands.market import market_group
 from fubon_cli.commands.realtime import realtime_group
 from fubon_cli.commands.stock import stock_group
@@ -26,6 +28,8 @@ cli.add_command(stock_group)
 cli.add_command(account_group)
 cli.add_command(market_group)
 cli.add_command(realtime_group)
+cli.add_command(futopt_group)
+cli.add_command(condition_group)
 
 
 if __name__ == "__main__":

@@ -70,6 +70,59 @@ def subscribe(symbol, channel):
         ws_stock.disconnect()
 
 
+@realtime_group.command("subscribe-futopt")
+@click.argument("symbol")
+@click.option(
+    "--channel",
+    type=click.Choice(["trades", "aggregates", "candles", "books"]),
+    default="trades",
+    help="Data channel to subscribe",
+)
+def subscribe_futopt(symbol, channel):
+    """Subscribe to realtime futures/options data. Streams JSON lines to stdout.
+
+    \b
+    Press Ctrl+C to stop.
+
+    Examples:
+      fubon realtime subscribe-futopt TXFC5
+      fubon realtime subscribe-futopt TXFC5 --channel aggregates
+    """
+    sdk, _ = get_sdk_and_accounts()
+    sdk.init_realtime()
+
+    ws_futopt = sdk.marketdata.websocket_client.futopt
+
+    def on_message(message):
+        if isinstance(message, str):
+            print(message, flush=True)
+        else:
+            print(json.dumps(message, ensure_ascii=False, default=str), flush=True)
+
+    def on_error(error):
+        err_msg = json.dumps({"event": "error", "message": str(error)}, ensure_ascii=False)
+        print(err_msg, flush=True)
+
+    ws_futopt.on("message", on_message)
+    ws_futopt.on("error", on_error)
+
+    ws_futopt.connect()
+    ws_futopt.subscribe({"channel": channel, "symbol": symbol})
+
+    def handle_signal(signum, frame):
+        ws_futopt.disconnect()
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, handle_signal)
+    signal.signal(signal.SIGTERM, handle_signal)
+
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        ws_futopt.disconnect()
+
+
 @realtime_group.command("callbacks")
 @click.option("--account-index", type=int, default=0, help="Account index")
 def callbacks(account_index):
