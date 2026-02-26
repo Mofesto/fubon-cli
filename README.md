@@ -31,15 +31,21 @@ All commands output structured JSON to stdout, making it straightforward for AI 
 - Fubon Neo SDK wheel file (`fubon_neo-2.2.8-cp37-abi3-win_amd64.whl`)
 - Fubon securities account with electronic certificate
 
+
 ## Installation
 
 ```bash
-# Install the Fubon Neo SDK
-pip install fubon_neo-2.2.8-cp37-abi3-win_amd64.whl
+# Install from PyPI (recommended)
+pip install fubon-cli
 
-# Install fubon-cli
+# Or, install from source (for development)
 pip install -e .
 ```
+
+# Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Mofesto/fubon-cli&type=date&legend=top-left)](https://www.star-history.com/#Mofesto/fubon-cli&type=date&legend=top-left)
+
 
 ## Quick Start
 
