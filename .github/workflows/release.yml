@@ -16,32 +16,33 @@ on:
           - major
 
 jobs:
-  release:
+  # 版本管理和標籤建立
+  version:
     runs-on: ubuntu-latest
-    environment: release
     permissions:
-      id-token: write
-      contents: read
+      contents: write
+    outputs:
+      tag: ${{ steps.version_output.outputs.tag }}
+      version: ${{ steps.version_output.outputs.version }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: "3.11"
 
-    - name: Install build dependencies
+    - name: Install setuptools-scm
       run: |
         python -m pip install --upgrade pip
         pip install setuptools-scm
-        pip install ./wheels/fubon_neo-2.2.8-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
-        pip install build twine
 
     - name: Get version from tag
       if: github.event_name == 'release'
+      id: get_version_tag
       run: |
         VERSION=${GITHUB_REF#refs/tags/v}
         echo "VERSION=$VERSION" >> $GITHUB_ENV
@@ -49,6 +50,7 @@ jobs:
 
     - name: Bump version and create tag
       if: github.event_name == 'workflow_dispatch'
+      id: bump_version
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
@@ -75,30 +77,82 @@ jobs:
         echo "TAG_VERSION=v$NEW_VERSION" >> $GITHUB_ENV
 
         # Create and push tag
-        git tag "$TAG_VERSION"
-        git push origin "$TAG_VERSION"
+        git tag "v$NEW_VERSION"
+        git push origin "v$NEW_VERSION"
+
+    - name: Set version output
+      id: version_output
+      run: |
+        echo "tag=${{ env.TAG_VERSION }}" >> $GITHUB_OUTPUT
+        echo "version=${{ env.VERSION }}" >> $GITHUB_OUTPUT
+
+  # 發布到 PyPI
+  pypi-release:
+    needs: version
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        ref: ${{ needs.version.outputs.tag }}
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: "3.11"
+
+    - name: Install build dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build twine setuptools-scm
 
     - name: Build package
-      run: |
-        python -m build
+      run: python -m build
+
+    - name: Check package
+      run: twine check dist/*
 
     - name: Publish to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        skip-existing: true
+        password: ${{ secrets.PYPI_API_TOKEN }}
+        print-hash: true
+
+  # 建立 GitHub Release
+  github-release:
+    needs: [version, pypi-release]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        ref: ${{ needs.version.outputs.tag }}
+
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: dist
+        path: dist/
+      continue-on-error: true
 
     - name: Create Release Notes
-      if: github.event_name == 'workflow_dispatch'
       run: |
-        echo "## Release ${{ env.VERSION }}" > release_notes.md
+        echo "## Release ${{ needs.version.outputs.version }}" > release_notes.md
         echo "" >> release_notes.md
-        echo "Published to [PyPI](https://pypi.org/project/fubon-cli/${{ env.VERSION }}/)" >> release_notes.md
+        echo "Published to [PyPI](https://pypi.org/project/fubon-cli/${{ needs.version.outputs.version }}/)" >> release_notes.md
 
     - name: Create GitHub Release
-      if: github.event_name == 'workflow_dispatch'
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: ${{ env.TAG_VERSION }}
+        tag_name: ${{ needs.version.outputs.tag }}
         body_path: release_notes.md
         files: dist/*
       env:
