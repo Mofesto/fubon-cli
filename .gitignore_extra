@@ -1,0 +1,14 @@
+exclude: |
+    (?x)^(
+        \.venv/|
+        venv/|
+        __pycache__/|
+        \.pytest_cache/|
+        \.mypy_cache/|
+        \.git/|
+        build/|
+        dist/|
+        .*\.egg-info/|
+        htmlcov/|
+        coverage.xml
+    )

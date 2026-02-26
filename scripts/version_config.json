@@ -1,0 +1,26 @@
+{
+  "project": {
+    "name": "fubon-cli",
+    "display_name": "Fubon CLI",
+    "description": "CLI tool for Fubon Neo trading API, designed for AI agent automation",
+    "owner": "Mofesto",
+    "repository": "fubon-cli"
+  },
+  "version": {
+    "current": "0.1.0",
+    "fubon_neo": "2.2.5"
+  },
+  "publisher": {
+    "name": "mofesto",
+    "display_name": "Mofesto.Cui",
+    "email": "mofesto.cui@gmail.com"
+  },
+  "urls": {
+    "homepage": "https://github.com/mofesto/fubon-cli",
+    "repository": "https://github.com/mofesto/fubon-cli",
+    "issues": "https://github.com/mofesto/fubon-cli/issues",
+    "pypi": "https://pypi.org/project/fubon-cli/",
+    "documentation": "https://github.com/mofesto/fubon-cli#readme"
+  },
+  "license": "MIT"
+}

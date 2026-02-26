@@ -1,20 +1,160 @@
 [build-system]
-requires = ["setuptools>=68.0", "wheel"]
+requires = ["setuptools>=68.0", "wheel", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "fubon-cli"
-version = "0.1.0"
+dynamic = ["version"]
 description = "CLI tool for Fubon Neo trading API, designed for AI agent automation"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.8"
-dependencies = [
-    "click>=8.0",
+authors = [
+    {name = "Mofesto.Cui", email = "mofesto.cui@gmail.com"},
 ]
+maintainers = [
+    {name = "Mofesto.Cui", email = "mofesto.cui@gmail.com"},
+]
+keywords = [
+    "fubon",
+    "cli",
+    "trading",
+    "securities",
+    "taiwan-stock",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business :: Financial :: Investment",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "fubon_neo>=2.2.7",
+    "click>=8.0",
+    "pydantic>=2.0.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-xdist>=3.0.0",
+    "pytest-mock>=3.10.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+    "ruff>=0.25.0",
+    "bandit>=1.7.0",
+    "safety>=2.3.0",
+    "bump2version>=1.0.0",
+    "twine>=4.0.0",
+    "build>=1.0.0",
+]
+docs = [
+    "sphinx>=5.0.0",
+    "sphinx-rtd-theme>=1.2.0",
+    "myst-parser>=0.18.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/mofesto/fubon-cli"
+Documentation = "https://github.com/mofesto/fubon-cli#readme"
+Repository = "https://github.com/mofesto/fubon-cli"
+Issues = "https://github.com/mofesto/fubon-cli/issues"
+Changelog = "https://github.com/mofesto/fubon-cli/blob/main/CHANGELOG.md"
+PyPI = "https://pypi.org/project/fubon-cli/"
 
 [project.scripts]
 fubon = "fubon_cli.main:cli"
 
+[tool.setuptools_scm]
+write_to = "fubon_cli/_version.py"
+version_scheme = "post-release"
+local_scheme = "node-and-date"
+fallback_version = "0.1.0"
+
 [tool.setuptools.packages.find]
+where = ["."]
 include = ["fubon_cli*"]
+
+# Testing configuration
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "--verbose --tb=short --strict-markers --coverage=fubon_cli --cov-report=html --cov-report=term-missing"
+markers = [
+    "slow: marks tests as slow",
+    "integration: marks tests as integration tests",
+    "cli: marks tests as CLI tests",
+]
+
+# Code quality tools
+[tool.black]
+line-length = 100
+target-version = ["py38"]
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+multi_line_mode = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+skip_gitignore = true
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py38"
+select = ["E", "F", "W", "I", "D"]
+ignore = ["E501", "D100", "D104"]
+
+[tool.bandit]
+exclude_dirs = ["tests", "build", "dist"]
+
+[tool.coverage.run]
+source = ["fubon_cli"]
+omit = ["*/tests/*", "*/__main__.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]

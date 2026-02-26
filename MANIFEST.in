@@ -1,0 +1,12 @@
+include README.md
+include LICENSE
+include CHANGELOG.md
+include CONTRIBUTING.md
+include RELEASE_GUIDE.md
+include pytest.ini
+
+recursive-include fubon_cli *.py
+recursive-include tests *.py
+recursive-include scripts *.ps1
+recursive-include scripts *.json
+recursive-include .github *.yml

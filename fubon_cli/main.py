@@ -2,6 +2,7 @@
 
 import click
 
+from fubon_cli import __version__
 from fubon_cli.commands.auth import auth_group
 from fubon_cli.commands.stock import stock_group
 from fubon_cli.commands.account import account_group
@@ -10,7 +11,7 @@ from fubon_cli.commands.realtime import realtime_group
 
 
 @click.group()
-@click.version_option(version="0.1.0", prog_name="fubon-cli")
+@click.version_option(version=__version__, prog_name="fubon-cli")
 def cli():
     """Fubon Neo Trading CLI - AI agent friendly command-line interface.
 
