@@ -223,6 +223,131 @@ On error:
 
 Streaming commands (`realtime subscribe`, `realtime callbacks`) output one JSON object per line (JSONL format).
 
+## AI Assistant
+
+**fubon-cli** 內置 AI 助理功能，可以通過自然語言與 CLI 互動，自動生成和執行交易指令。
+
+### Setup (設定 AI)
+
+首先安裝 OpenAI 支持：
+
+```bash
+pip install fubon-cli[ai]
+# 或
+pip install openai
+```
+
+然後設定 OpenAI API Key：
+
+```bash
+# 方式 1：設定 OpenAI API 密鑰
+fubon config set openai-key sk-proj-...
+
+# 方式 2：使用環境變數
+export OPENAI_API_KEY=sk-proj-...
+export FUBON_AI_KEY=sk-proj-...   # 或這個
+
+# 方式 3：查看目前配置
+fubon config show
+```
+
+### 一次性查詢 (fubon ask)
+
+快速詢問 AI 並取得命令建議：
+
+```bash
+# 基本詢問
+fubon ask "台積電(2330)的目前報價是多少？"
+
+# 詢問並執行建議的命令（互動確認）
+fubon ask "如何以市價買入 2330 一張？" --execute
+
+# 縮寫
+fubon ask "幫我查詢帳戶庫存" -x
+
+# 用於 AI 代理人（JSON 輸出）
+fubon ask "取得 2330 的即時報價" --json-output
+```
+
+輸出格式（--json-output）：
+
+```json
+{
+  "success": true,
+  "question": "台積電(2330)的目前報價是多少？",
+  "answer": "根據 Fubon Neo SDK...",
+  "suggested_commands": [
+    "fubon market quote 2330"
+  ]
+}
+```
+
+### 互動對話模式 (fubon chat)
+
+進入 AI 聊天 REPL，可連續對話和執行命令：
+
+```bash
+fubon chat
+```
+
+進入後的內建指令：
+
+```
+/run      — 執行 AI 最新建議的指令（帶確認）
+/clear    — 清除對話記錄，重新開始
+exit      — 離開
+```
+
+例子：
+
+```
+你 ❯ 台積電現在的股價多少？
+富邦助理 ❯ 為了幫您查詢台積電(2330)的目前股價...
+[AI 回覆 + 建議指令]
+
+💡 有 1 個建議指令，輸入 /run 執行
+你 ❯ /run
+  1. ✦ fubon market quote 2330
+  執行 [fubon market quote 2330]? (y|n): y
+  ▶ fubon market quote 2330
+  {
+    "success": true,
+    "data": {
+      "symbol": "2330",
+      "price": 995.0,
+      ...
+    }
+  }
+
+你 ❯ 幫我買 5 張零股
+富邦助理 ❯ 為了買進 2330 的零股...
+  ⚠ [交易] fubon stock buy 2330 50 --price 990
+  執行交易指令？此操作會影響帳戶！
+  [fubon stock buy 2330 50 --price 990]
+  請輸入 yes 確認
+```
+
+### AI 助理特性
+
+- **繁體中文對話** — 自動回應繁體中文
+- **命令生成** — 自動從回應中提取 `fubon` 命令
+- **安全確認** — 交易命令（買、賣、取消等）需要顯式確認
+- **完整 CLI 知識** — AI 瞭解所有 fubon 指令語法和選項
+- **多模型支持** — 預設使用 `gpt-4o-mini`，可切換為 `gpt-4o` 等
+
+### 配置 AI 模型
+
+```bash
+# 查看目前模型
+fubon config show
+
+# 更改為 GPT-4O
+fubon config set ai-model gpt-4o
+
+# 更改為其他模型
+fubon config set ai-model gpt-4-turbo
+```
+
 ## AI Agent Integration
 
 This CLI is designed for AI agents to automate trading workflows:
