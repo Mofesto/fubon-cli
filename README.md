@@ -1,5 +1,26 @@
 # fubon-cli
 
+<div align="center" style="line-height: 1;">
+  <a href="https://pypi.org/project/fubon-cli/" target="_blank"><img alt="PyPI version" src="https://img.shields.io/pypi/v/fubon-cli.svg"/></a>
+  <a href="https://codecov.io/gh/Mofesto/fubon-cli" target="_blank"><img alt="codecov" src="https://codecov.io/gh/Mofesto/fubon-cli/branch/main/graph/badge.svg"/></a>
+</div>
+
+<p align="center">
+  <img src="assets/image.png" style="width: 60%; height: auto;">
+</p>
+
+<div align="center">
+  <!-- Keep these links. Translations will automatically update with the README. -->
+  <a href="https://www.readme-i18n.com/Mofesto/fubon-cli?lang=de">Deutsch</a> |
+  <a href="https://www.readme-i18n.com/Mofesto/fubon-cli?lang=es">Español</a> |
+  <a href="https://www.readme-i18n.com/Mofesto/fubon-cli?lang=fr">français</a> |
+  <a href="https://www.readme-i18n.com/Mofesto/fubon-cli?lang=ja">日本語</a> |
+  <a href="https://www.readme-i18n.com/Mofesto/fubon-cli?lang=ko">한국어</a> |
+  <a href="https://www.readme-i18n.com/Mofesto/fubon-cli?lang=pt">Português</a> |
+  <a href="https://www.readme-i18n.com/Mofesto/fubon-cli?lang=ru">Русский</a> |
+  <a href="https://www.readme-i18n.com/Mofesto/fubon-cli?lang=zh">中文</a>
+</div>
+
 Command-line interface for the Fubon Neo Trading API (v2.2.8), designed for AI agent automation.
 
 All commands output structured JSON to stdout, making it straightforward for AI agents, scripts, or pipelines to parse and act on results.
