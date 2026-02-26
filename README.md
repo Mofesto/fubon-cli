@@ -11,6 +11,7 @@
 
 <div align="center">
   <!-- Keep these links. Translations will automatically update with the README. -->
+  <a href="https://www.readme-i18n.com/Mofesto/fubon-cli?lang=en">English</a> |
   <a href="https://www.readme-i18n.com/Mofesto/fubon-cli?lang=de">Deutsch</a> |
   <a href="https://www.readme-i18n.com/Mofesto/fubon-cli?lang=es">Español</a> |
   <a href="https://www.readme-i18n.com/Mofesto/fubon-cli?lang=fr">français</a> |
@@ -18,192 +19,192 @@
   <a href="https://www.readme-i18n.com/Mofesto/fubon-cli?lang=ko">한국어</a> |
   <a href="https://www.readme-i18n.com/Mofesto/fubon-cli?lang=pt">Português</a> |
   <a href="https://www.readme-i18n.com/Mofesto/fubon-cli?lang=ru">Русский</a> |
-  <a href="https://www.readme-i18n.com/Mofesto/fubon-cli?lang=zh">中文</a>
+  <a href="https://www.readme-i18n.com/Mofesto/fubon-cli?lang=zh">簡體中文</a>
 </div>
 
-Command-line interface for the Fubon Neo Trading API (v2.2.8), designed for AI agent automation.
+富邦證券 Fubon Neo Trading API（v2.2.8）的命令列工具，專為 AI 代理自動化設計。
 
-All commands output structured JSON to stdout, making it straightforward for AI agents, scripts, or pipelines to parse and act on results.
+所有指令皆輸出結構化 JSON 到 stdout，方便 AI 代理、腳本或管線解析與接續處理。
 
-## Prerequisites
+## 環境需求
 
 - Python 3.8 - 3.13
-- Fubon Neo SDK wheel file (`fubon_neo-2.2.8-cp37-abi3-win_amd64.whl`)
-- Fubon securities account with electronic certificate
+- Fubon Neo SDK wheel 檔（`fubon_neo-2.2.8-cp37-abi3-win_amd64.whl`）
+- 具電子憑證的富邦證券帳戶
 
 
-## Installation
+## 安裝
 
 ```bash
-# Install from PyPI (recommended)
+# 從 PyPI 安裝（建議）
 pip install fubon-cli
 
-# Or, install from source (for development)
+# 或從原始碼安裝（開發用）
 pip install -e .
 ```
 
-# Star History
+# Star 歷史
 
 [![Star History Chart](https://api.star-history.com/svg?repos=Mofesto/fubon-cli&type=date&legend=top-left)](https://www.star-history.com/#Mofesto/fubon-cli&type=date&legend=top-left)
 
 
-## Quick Start
+## 快速開始
 
 ```bash
-# 1. Login (saves session for subsequent commands)
+# 1. 登入（儲存 session 供後續指令使用）
 fubon login --id "A123456789" --password "yourpass" --cert-path "/path/to/cert.pfx" --cert-password "certpass"
 
-# 2. Get a stock quote
+# 2. 取得報價
 fubon market quote 2330
 
-# 3. Place a buy order
+# 3. 下買單
 fubon stock buy 2330 1000 --price 580
 
-# 4. Check your orders
+# 4. 查詢委託
 fubon stock orders
 
-# 5. Check your inventory
+# 5. 查詢庫存
 fubon account inventory
 ```
 
-## Command Reference
+## 指令參考
 
-### Authentication
+### 認證
 
 ```bash
-# Login
+# 登入
 fubon login --id <ID> --password <PW> --cert-path <PATH> [--cert-password <PW>]
 
-# Check login status
+# 查詢登入狀態
 fubon login status
 
-# Logout (clear saved credentials)
+# 登出（清除儲存的認證）
 fubon login logout
 ```
 
-### Stock Trading
+### 股票交易
 
 ```bash
-# Buy stock (limit order)
+# 買進（限價）
 fubon stock buy <SYMBOL> <QUANTITY> --price <PRICE>
 
-# Buy at limit-down price
+# 以跌停價買進
 fubon stock buy 2881 2000 --price-type limit-down
 
-# Buy with IOC (Immediate or Cancel)
+# 以 IOC（立即成交或取消）買進
 fubon stock buy 2330 500 --price 580 --time-in-force IOC
 
-# Sell stock
+# 賣出
 fubon stock sell <SYMBOL> <QUANTITY> --price <PRICE>
 
-# Market order sell
+# 市價賣出
 fubon stock sell 2330 1000 --price-type market
 
-# Day trade order
+# 當沖委託
 fubon stock buy 2330 1000 --price 580 --order-type day-trade
 
-# Odd-lot order
+# 零股委託
 fubon stock buy 2330 50 --price 580 --market-type intraday-odd
 
-# Query current orders
+# 查詢委託
 fubon stock orders
 
-# Cancel an order
+# 取消委託
 fubon stock cancel <ORDER_NO>
 
-# Modify order price
+# 改價
 fubon stock modify-price <ORDER_NO> <NEW_PRICE>
 
-# Modify order quantity
+# 改量
 fubon stock modify-quantity <ORDER_NO> <NEW_QUANTITY>
 ```
 
-**Order Options:**
+**委託選項：**
 
-| Option | Values | Default |
+| 參數 | 值 | 預設 |
 |--------|--------|---------|
 | `--price-type` | `limit`, `market`, `limit-up`, `limit-down`, `reference` | `limit` |
 | `--time-in-force` | `ROD`, `IOC`, `FOK` | `ROD` |
 | `--order-type` | `stock`, `margin`, `short`, `sbl`, `day-trade` | `stock` |
 | `--market-type` | `common`, `odd`, `intraday-odd`, `fixing`, `emg`, `emg-odd` | `common` |
 
-### Account Queries
+### 帳務查詢
 
 ```bash
-# Query stock inventory (positions)
+# 查詢股票庫存（持倉）
 fubon account inventory
 
-# Query unrealized gains/losses
+# 查詢未實現損益
 fubon account unrealized
 
-# Query settlement info (today)
+# 查詢當日交割資訊
 fubon account settlement
 
-# Query settlement for yesterday
+# 查詢昨日交割資訊
 fubon account settlement --range 1d
 
-# Query margin/short quota for a stock
+# 查詢個股融資融券額度
 fubon account margin-quota 2330
 ```
 
-### Market Data
+### 市場資料
 
 ```bash
-# Realtime quote
+# 即時報價
 fubon market quote 2330
 
-# Stock ticker info
+# 個股資訊
 fubon market ticker 2330
 
-# Intraday K-line (5-min default)
+# 盤中 K 線（預設 5 分鐘）
 fubon market candles 2330
 fubon market candles 2330 --timeframe 15
 
-# Intraday trade details
+# 盤中成交明細
 fubon market trades 2330 --limit 50
 
-# Price-volume distribution
+# 價量分布
 fubon market volumes 2330
 
-# Market snapshot
+# 大盤快照
 fubon market snapshot TSE
 
-# Top movers (gainers)
+# 漲幅排行
 fubon market movers TSE --direction up --change percent
 
-# Top movers (losers)
+# 跌幅排行
 fubon market movers OTC --direction down
 
-# Most active stocks
+# 成交量排行
 fubon market actives TSE --trade volume
 
-# Historical K-line
+# 歷史 K 線
 fubon market history 2330 --from 2024-01-01 --to 2024-06-30
 fubon market history 0050 --timeframe W --adjusted
 
-# 52-week statistics
+# 52 週統計
 fubon market stats 2330
 
-# List all equity tickers
+# 列出所有股票代碼
 fubon market tickers --type EQUITY --exchange TWSE
 ```
 
-### Realtime Streaming
+### 即時串流
 
 ```bash
-# Subscribe to realtime trade data (streams JSON lines)
+# 訂閱即時成交（JSONL 串流）
 fubon realtime subscribe 2330
 
-# Subscribe to aggregated data
+# 訂閱聚合資料
 fubon realtime subscribe 2330 --channel aggregates
 
-# Listen to order/fill callbacks (streams JSON lines)
+# 監聽委託/成交回報（JSONL 串流）
 fubon realtime callbacks
 ```
 
-## JSON Output Format
+## JSON 輸出格式
 
-All commands output JSON with a consistent structure:
+所有指令皆輸出一致的 JSON 結構：
 
 ```json
 {
@@ -212,7 +213,7 @@ All commands output JSON with a consistent structure:
 }
 ```
 
-On error:
+錯誤時：
 
 ```json
 {
@@ -221,15 +222,15 @@ On error:
 }
 ```
 
-Streaming commands (`realtime subscribe`, `realtime callbacks`) output one JSON object per line (JSONL format).
+串流指令（`realtime subscribe`, `realtime callbacks`）每行輸出一個 JSON 物件（JSONL 格式）。
 
-## AI Assistant
+## AI 助理
 
 **fubon-cli** 內置 AI 助理功能，可以通過自然語言與 CLI 互動，自動生成和執行交易指令。
 
-### Setup (設定 AI)
+### 設定 AI
 
-首先安裝 OpenAI 支持：
+先安裝 OpenAI 支援：
 
 ```bash
 pip install fubon-cli[ai]
@@ -237,10 +238,10 @@ pip install fubon-cli[ai]
 pip install openai
 ```
 
-然後設定 OpenAI API Key：
+再設定 OpenAI API Key：
 
 ```bash
-# 方式 1：設定 OpenAI API 密鑰
+# 方式 1：設定 OpenAI API Key
 fubon config set openai-key sk-proj-...
 
 # 方式 2：使用環境變數
@@ -251,7 +252,7 @@ export FUBON_AI_KEY=sk-proj-...   # 或這個
 fubon config show
 ```
 
-### 一次性查詢 (fubon ask)
+### 一次性查詢（fubon ask）
 
 快速詢問 AI 並取得命令建議：
 
@@ -265,11 +266,11 @@ fubon ask "如何以市價買入 2330 一張？" --execute
 # 縮寫
 fubon ask "幫我查詢帳戶庫存" -x
 
-# 用於 AI 代理人（JSON 輸出）
+# 用於 AI 代理（JSON 輸出）
 fubon ask "取得 2330 的即時報價" --json-output
 ```
 
-輸出格式（--json-output）：
+輸出格式（`--json-output`）：
 
 ```json
 {
@@ -282,9 +283,9 @@ fubon ask "取得 2330 的即時報價" --json-output
 }
 ```
 
-### 互動對話模式 (fubon chat)
+### 互動對話模式（fubon chat）
 
-進入 AI 聊天 REPL，可連續對話和執行命令：
+進入 AI 聊天 REPL，可連續對話並執行命令：
 
 ```bash
 fubon chat
@@ -298,7 +299,7 @@ fubon chat
 exit      — 離開
 ```
 
-例子：
+示例：
 
 ```
 你 ❯ 台積電現在的股價多少？
@@ -330,49 +331,49 @@ exit      — 離開
 ### AI 助理特性
 
 - **繁體中文對話** — 自動回應繁體中文
-- **命令生成** — 自動從回應中提取 `fubon` 命令
-- **安全確認** — 交易命令（買、賣、取消等）需要顯式確認
+- **指令生成** — 自動從回應中擷取 `fubon` 指令
+- **安全確認** — 交易指令（買、賣、取消等）需要明確確認
 - **完整 CLI 知識** — AI 瞭解所有 fubon 指令語法和選項
-- **多模型支持** — 預設使用 `gpt-4o-mini`，可切換為 `gpt-4o` 等
+- **多模型支援** — 預設使用 `gpt-4o-mini`，可切換為 `gpt-4o` 等
 
-### 配置 AI 模型
+### 設定 AI 模型
 
 ```bash
 # 查看目前模型
 fubon config show
 
-# 更改為 GPT-4O
+# 改為 GPT-4O
 fubon config set ai-model gpt-4o
 
-# 更改為其他模型
+# 改為其他模型
 fubon config set ai-model gpt-4-turbo
 ```
 
-## AI Agent Integration
+## AI 代理整合
 
-This CLI is designed for AI agents to automate trading workflows:
+此 CLI 針對 AI 代理的交易流程自動化設計：
 
-1. **Stateless execution**: Each command is a standalone invocation. Login credentials are persisted in `~/.fubon-cli-session.json`.
-2. **JSON output**: All responses are machine-parseable JSON.
-3. **Error codes**: Non-zero exit codes on failure, with error details in JSON.
-4. **Streaming**: Realtime data streams as JSONL for continuous monitoring.
+1. **無狀態執行**：每個指令都是獨立呼叫，登入憑證會儲存在 `~/.fubon-cli-session.json`。
+2. **JSON 輸出**：所有回應皆為可機器解析的 JSON。
+3. **錯誤代碼**：失敗時返回非 0 狀態碼，錯誤細節在 JSON 中。
+4. **串流**：即時資料以 JSONL 持續輸出，便於監控。
 
-Example agent workflow:
+代理流程示例：
 
 ```bash
-# Check current positions
+# 查詢持倉
 positions=$(fubon account inventory)
 
-# Get a quote
+# 取得報價
 quote=$(fubon market quote 2330)
 
-# Place an order based on agent logic
+# 依代理邏輯下單
 fubon stock buy 2330 1000 --price 580
 
-# Monitor fills
+# 監控成交回報
 fubon realtime callbacks
 ```
 
-## License
+## 授權
 
 MIT
