@@ -4,7 +4,7 @@ __pycache__/
 *.egg-info/
 dist/
 build/
-*.whl
+# *.whl
 .env
 *.pem
 *.pfx
