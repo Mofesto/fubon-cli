@@ -14,3 +14,5 @@ _whl_extract/
 .session.json
 venv/
 .venv/
+log/
+
