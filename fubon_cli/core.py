@@ -39,13 +39,19 @@ def _import_sdk():
         sys.exit(1)
 
 
-def save_session(personal_id, password, cert_path, cert_password):
-    """Save login credentials to session file."""
+def save_session(personal_id, password, cert_path, cert_password, login_type="password", api_key=None):
+    """Save login credentials to session file.
+
+    login_type: "password" for standard password login, "apikey" for API Key login.
+    api_key: required when login_type="apikey".
+    """
     data = {
+        "login_type": login_type,
         "personal_id": personal_id,
         "password": password,
         "cert_path": cert_path,
         "cert_password": cert_password,
+        "api_key": api_key,
     }
     with open(SESSION_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f)
@@ -68,6 +74,8 @@ def clear_session():
 def get_sdk_and_accounts():
     """Create SDK instance, login with saved session, return (sdk, accounts_data).
 
+    Supports both password login and API Key login depending on session login_type.
+
     Returns:
         tuple: (sdk_instance, list_of_account_objects)
     """
@@ -77,7 +85,10 @@ def get_sdk_and_accounts():
             json.dumps(
                 {
                     "success": False,
-                    "error": "Not logged in. Run: fubon login --id <ID> --password <PW> --cert-path <PATH> --cert-password <PW>",
+                    "error": (
+                        "Not logged in. Run: fubon login --id <ID> --password <PW> --cert-path <PATH>"
+                        " or: fubon login --id <ID> --api-key <KEY> --cert-path <PATH>"
+                    ),
                 }
             )
         )
@@ -86,11 +97,18 @@ def get_sdk_and_accounts():
     FubonSDK, _ = _import_sdk()
     sdk = FubonSDK()
 
-    args = [session["personal_id"], session["password"], session["cert_path"]]
-    if session.get("cert_password"):
-        args.append(session["cert_password"])
+    login_type = session.get("login_type", "password")
 
-    result = sdk.login(*args)
+    if login_type == "apikey":
+        args = [session["personal_id"], session["api_key"], session["cert_path"]]
+        if session.get("cert_password"):
+            args.append(session["cert_password"])
+        result = sdk.apikey_login(*args)
+    else:
+        args = [session["personal_id"], session["password"], session["cert_path"]]
+        if session.get("cert_password"):
+            args.append(session["cert_password"])
+        result = sdk.login(*args)
 
     if not getattr(result, "is_success", False):
         msg = getattr(result, "message", "Unknown login error")

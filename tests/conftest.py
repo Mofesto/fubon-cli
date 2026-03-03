@@ -407,6 +407,20 @@ class MockSDK:
         )
         self.callbacks = {}
 
+    def login(self, *args):
+        """Simulate password login."""
+        return Obj(
+            is_success=True,
+            data=[Obj(name="Tester", account="617842", branch_no="20203", account_type="stock")],
+        )
+
+    def apikey_login(self, *args):
+        """Simulate API Key login."""
+        return Obj(
+            is_success=True,
+            data=[Obj(name="Tester", account="617842", branch_no="20203", account_type="stock")],
+        )
+
     def init_realtime(self):
         """Initialize realtime connection."""
         return None
@@ -475,6 +489,9 @@ def fake_fubon_modules(monkeypatch):
 
     class _FubonSDK:
         def login(self, *args):
+            return Obj(is_success=True, data=[Obj(name="Tester", account="617842")])
+
+        def apikey_login(self, *args):
             return Obj(is_success=True, data=[Obj(name="Tester", account="617842")])
 
     sdk_mod.FubonSDK = _FubonSDK

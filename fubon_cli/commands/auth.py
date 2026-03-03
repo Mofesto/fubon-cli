@@ -1,6 +1,5 @@
 """Authentication commands: login, logout, status."""
 
-import json
 import sys
 
 import click
@@ -17,27 +16,53 @@ from fubon_cli.core import (
 
 @click.group("login", invoke_without_command=True)
 @click.option("--id", "personal_id", required=False, help="Personal ID (身分證字號)")
-@click.option("--password", required=False, help="Login password")
+@click.option("--password", required=False, default=None, help="Login password")
+@click.option("--api-key", "api_key", required=False, default=None, help="API Key (v2.2.7+)")
 @click.option("--cert-path", required=False, help="Path to certificate file")
 @click.option("--cert-password", default=None, help="Certificate password (defaults to ID)")
 @click.pass_context
-def auth_group(ctx, personal_id, password, cert_path, cert_password):
+def auth_group(ctx, personal_id, password, api_key, cert_path, cert_password):
     """Login, logout, and session management.
 
     \b
-    Login:   fubon login --id <ID> --password <PW> --cert-path <PATH>
-    Logout:  fubon login logout
-    Status:  fubon login status
+    Password login:  fubon login --id <ID> --password <PW> --cert-path <PATH>
+    API Key login:   fubon login --id <ID> --api-key <KEY> --cert-path <PATH>
+    Logout:          fubon login logout
+    Status:          fubon login status
     """
     if ctx.invoked_subcommand is not None:
         return
 
-    # Direct invocation = login
-    if not all([personal_id, password, cert_path]):
+    # Validate credential options
+    if password and api_key:
         output(
             None,
             success=False,
-            error="Missing required options. Usage: fubon login --id <ID> --password <PW> --cert-path <PATH> [--cert-password <PW>]",
+            error="Cannot use --password and --api-key together. Choose one login method.",
+        )
+        sys.exit(1)
+
+    if not personal_id or not cert_path:
+        output(
+            None,
+            success=False,
+            error=(
+                "Missing required options. Usage:\n"
+                "  fubon login --id <ID> --password <PW> --cert-path <PATH>\n"
+                "  fubon login --id <ID> --api-key <KEY> --cert-path <PATH>"
+            ),
+        )
+        sys.exit(1)
+
+    if not password and not api_key:
+        output(
+            None,
+            success=False,
+            error=(
+                "Provide either --password or --api-key. Usage:\n"
+                "  fubon login --id <ID> --password <PW> --cert-path <PATH>\n"
+                "  fubon login --id <ID> --api-key <KEY> --cert-path <PATH>"
+            ),
         )
         sys.exit(1)
 
@@ -52,18 +77,32 @@ def auth_group(ctx, personal_id, password, cert_path, cert_password):
         sys.exit(1)
 
     sdk = FubonSDK()
-    args = [personal_id, password, cert_path]
-    if cert_password:
-        args.append(cert_password)
 
-    result = sdk.login(*args)
-
-    if not getattr(result, "is_success", False):
-        msg = getattr(result, "message", "Unknown error")
-        output(None, success=False, error=f"Login failed: {msg}")
-        sys.exit(1)
-
-    save_session(personal_id, password, cert_path, cert_password or "")
+    if api_key:
+        # API Key login (v2.2.7+)
+        args = [personal_id, api_key, cert_path]
+        if cert_password:
+            args.append(cert_password)
+        result = sdk.apikey_login(*args)
+        if not getattr(result, "is_success", False):
+            msg = getattr(result, "message", "Unknown error")
+            output(None, success=False, error=f"API Key login failed: {msg}")
+            sys.exit(1)
+        save_session(
+            personal_id, None, cert_path, cert_password or "",
+            login_type="apikey", api_key=api_key,
+        )
+    else:
+        # Password login
+        args = [personal_id, password, cert_path]
+        if cert_password:
+            args.append(cert_password)
+        result = sdk.login(*args)
+        if not getattr(result, "is_success", False):
+            msg = getattr(result, "message", "Unknown error")
+            output(None, success=False, error=f"Login failed: {msg}")
+            sys.exit(1)
+        save_session(personal_id, password, cert_path, cert_password or "")
 
     accounts = []
     for acc in result.data:
@@ -86,9 +125,11 @@ def status():
     if session is None:
         output({"logged_in": False}, success=True)
     else:
+        login_type = session.get("login_type", "password")
         output(
             {
                 "logged_in": True,
+                "login_type": login_type,
                 "personal_id": session["personal_id"][:3] + "***",
                 "cert_path": session["cert_path"],
             },
