@@ -162,3 +162,45 @@ jobs:
         files: dist/*
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  skill-release:
+    needs: [version, pypi-release]
+    runs-on: ubuntu-latest
+    name: Publish Skill To Clawhub
+    permissions:
+      contents: read
+    env:
+      CLAWHUB_API_TOKEN: ${{ secrets.CLAWHUB_API_TOKEN }}
+      CLAWHUB_BASE_URL: ${{ vars.CLAWHUB_BASE_URL }}
+      CLAWHUB_PUBLISH_ENDPOINT: ${{ vars.CLAWHUB_PUBLISH_ENDPOINT }}
+      CLAWHUB_SKILL_SLUG: fubon-cli
+
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        ref: ${{ needs.version.outputs.tag }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: "3.11"
+
+    - name: Validate SKILL.md
+      run: python scripts/validate_skill_doc.py --skill-file SKILL.md
+
+    - name: Build skill bundle
+      run: |
+        python scripts/build_skill_bundle.py \
+          --skill-file SKILL.md \
+          --output-dir dist/skill \
+          --version "${{ needs.version.outputs.version }}"
+
+    - name: Publish to clawhub.ai
+      run: python scripts/publish_skill.py --bundle-dir dist/skill
+
+    - name: Upload skill release artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: skill-release-bundle
+        path: dist/skill/
+        retention-days: 30

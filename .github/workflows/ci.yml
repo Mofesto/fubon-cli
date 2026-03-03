@@ -113,8 +113,33 @@ jobs:
     - name: Check dependencies with Safety
       run: safety check --json || true
 
+  skill-quality:
+    runs-on: ubuntu-latest
+    name: Skill Quality Checks
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Validate SKILL.md coverage
+      run: python scripts/validate_skill_doc.py --skill-file SKILL.md
+
+    - name: Build skill bundle artifact
+      run: python scripts/build_skill_bundle.py --skill-file SKILL.md --output-dir dist/skill
+
+    - name: Upload skill bundle
+      uses: actions/upload-artifact@v4
+      with:
+        name: skill-bundle
+        path: dist/skill/
+        retention-days: 5
+
   build:
-    needs: [test, code-quality]
+    needs: [test, code-quality, skill-quality]
     runs-on: ubuntu-latest
     name: Build Package
 
