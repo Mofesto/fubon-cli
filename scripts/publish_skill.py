@@ -62,9 +62,22 @@ def main() -> int:
         print("Missing CLAWHUB_API_TOKEN")
         return 1
 
-    base_url = os.getenv("CLAWHUB_BASE_URL", "https://clawhub.ai")
-    endpoint = os.getenv("CLAWHUB_PUBLISH_ENDPOINT", "/api/v1/skills/publish")
+    # Resolve base URL and endpoint with validation. Accept full endpoint URLs.
+    base_url_env = os.getenv("CLAWHUB_BASE_URL")
+    endpoint_env = os.getenv("CLAWHUB_PUBLISH_ENDPOINT")
+
+    base_url = base_url_env if base_url_env and base_url_env.strip() else "https://clawhub.ai"
+    endpoint = endpoint_env if endpoint_env and endpoint_env.strip() else "/api/v1/skills/publish"
+
     url = resolve_endpoint(base_url, endpoint)
+
+    # Validate the resolved URL looks like an absolute HTTP(S) URL
+    if not (url.startswith("http://") or url.startswith("https://")):
+        print("Invalid publish URL resolved:", repr(url))
+        print(
+            "Check CLAWHUB_BASE_URL and CLAWHUB_PUBLISH_ENDPOINT environment variables."
+        )
+        return 1
 
     data = json.dumps(payload).encode("utf-8")
     req = urllib.request.Request(
