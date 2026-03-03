@@ -54,6 +54,9 @@ pip install -e .
 # 1. 登入（儲存 session 供後續指令使用）
 fubon login --id "A123456789" --password "yourpass" --cert-path "/path/to/cert.pfx" --cert-password "certpass"
 
+# 或使用 API Key 登入（需 fubon_neo >= 2.2.7）
+fubon login --id "A123456789" --api-key "your_api_key" --cert-path "/path/to/cert.pfx" --cert-password "certpass"
+
 # 2. 取得報價
 fubon market quote 2330
 
@@ -74,6 +77,8 @@ fubon account inventory
 ```bash
 # 登入
 fubon login --id <ID> --password <PW> --cert-path <PATH> [--cert-password <PW>]
+# API Key 登入（fubon_neo >= 2.2.7）
+fubon login --id <ID> --api-key <KEY> --cert-path <PATH>
 
 # 查詢登入狀態
 fubon login status
@@ -81,6 +86,8 @@ fubon login status
 # 登出（清除儲存的認證）
 fubon login logout
 ```
+
+`fubon login status` 的輸出會包含 `login_type` 欄位（`password` 或 `apikey`），用以表示目前的登入方式。
 
 ### 股票交易
 
