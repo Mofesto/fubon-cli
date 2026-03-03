@@ -3,6 +3,9 @@ name: Release
 on:
   release:
     types: [published]
+  push:
+    tags:
+      - 'v*'
   workflow_dispatch:
     inputs:
       version:
@@ -41,7 +44,7 @@ jobs:
         pip install setuptools-scm
 
     - name: Get version from tag
-      if: github.event_name == 'release'
+      if: github.event_name == 'release' || github.event_name == 'push'
       id: get_version_tag
       run: |
         VERSION=${GITHUB_REF#refs/tags/v}
@@ -132,7 +135,7 @@ jobs:
   github-release:
     needs: [version, pypi-release]
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     permissions:
       contents: write
 
