@@ -51,6 +51,7 @@ pip install fubon-cli
 
 ```bash
 fubon login --id <ID> --password <PW> --cert-path <PATH> --cert-password <CERT_PW>
+fubon login --id <ID> --api-key <API_KEY>  --cert-path <PATH> --cert-password <CERT_PW>
 fubon market quote 2330
 fubon stock buy 2330 1000 --price 580
 fubon stock orders
