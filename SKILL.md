@@ -66,6 +66,12 @@ fubon login status
 fubon login logout
 ```
 
+## Command Surface
+
+The `Command Surface` below lists the primary CLI entrypoints and example usages. These map 1:1 to the `fubon-cli` commands and are safe to invoke from automation when preconditions are met.
+
+See the examples in the `Command Map` section for concrete invocations.
+
 ### Stock
 
 ```bash
@@ -174,3 +180,10 @@ This skill is version-bound with `fubon-cli`.
 - `scripts/build_skill_bundle.py` builds skill artifact.
 - `scripts/publish_skill.py` publishes to clawhub endpoint.
 - CI/CD should publish skill after package release to keep tool and skill synchronized.
+
+## Version Binding
+
+This skill's version must be kept in sync with the `fubon-cli` package version. The CI/CD pipeline is configured to build and publish the skill bundle immediately after a successful package release so the skill metadata (`skill.manifest.json`) and `SKILL.md` match the released package.
+
+- Use `scripts/build_skill_bundle.py` to create `dist/skill` artifacts tied to the current git tag or package version.
+- Use `scripts/publish_skill.py` (requires `CLAWHUB_API_TOKEN`) to publish the bundle to the skill registry.
